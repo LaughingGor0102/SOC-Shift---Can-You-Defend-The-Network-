@@ -1,8 +1,8 @@
-# SOC Shift
+# SOC Shift  🛡️ 🛡️ 🛡️
 
 **Can you defend the network?**
 
-SOC Shift is a lightweight, browser-based cybersecurity learning game where you play as a Security Operations Center (SOC) analyst. Review simulated security alerts, inspect raw logs, and decide whether each event is safe, suspicious, or an attack—all before the timer runs out.
+SOC Shift is a lightweight, browser-based cybersecurity learning quiz game where you play as a Security Operations Center (SOC) analyst. Review simulated security alerts, inspect raw logs, and decide whether each event is safe, suspicious, or an attack—all before the timer runs out.
 
 No cybersecurity experience is required: each decision comes with an explanation to help you learn as you play.
 
