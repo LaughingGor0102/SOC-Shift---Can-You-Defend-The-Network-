@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SOC Shift – Can you defend the network?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg0:#060a14;--bg1:#0a1120;--card:rgba(20,30,54,.68);--cardb:rgba(255,255,255,.08);
+  --tx:#eaf1ff;--mu:#93a3c4;--bd:rgba(130,160,220,.22);
+  --ac:#22d3ee;--ac2:#a78bfa;--ok:#34e7b3;--wn:#fbbf24;--bad:#fb7185;
+  --code:#040a12;--codetx:#8ff5c8;
+  color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100%;background:var(--bg0);color:var(--tx);position:relative;overflow-x:hidden;
+ font:16px/1.6 "Space Grotesk","Segoe UI",system-ui,sans-serif}
+body::before{content:"";position:fixed;inset:-15%;z-index:-2;pointer-events:none;filter:blur(6px);
+ background:
+  radial-gradient(640px circle at 14% 12%, rgba(34,211,238,.20), transparent 60%),
+  radial-gradient(620px circle at 88% 28%, rgba(167,139,250,.17), transparent 60%),
+  radial-gradient(760px circle at 45% 92%, rgba(52,231,179,.13), transparent 60%);
+ animation:drift 24s ease-in-out infinite alternate}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+ background-image:linear-gradient(rgba(147,163,196,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(147,163,196,.07) 1px,transparent 1px);
+ background-size:38px 38px;
+ -webkit-mask-image:radial-gradient(ellipse 85% 55% at 50% 0%,#000 45%,transparent 100%);
+ mask-image:radial-gradient(ellipse 85% 55% at 50% 0%,#000 45%,transparent 100%)}
+@keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-3%,2.5%) scale(1.06)}}
+@media (prefers-reduced-motion:reduce){body::before{animation:none}}
+main{max-width:720px;margin:0 auto;padding:22px 16px 52px;position:relative}
+h1{font-family:"Space Grotesk";font-weight:700;font-size:clamp(32px,7vw,46px);line-height:1.05;margin:6px 0 12px;letter-spacing:-.02em;
+ background:linear-gradient(100deg,#fff 10%,var(--ac) 55%,var(--ac2) 90%);-webkit-background-clip:text;background-clip:text;color:transparent}
+h1.cursor::after{content:"_";color:var(--ac);-webkit-text-fill-color:var(--ac);animation:blink 1.1s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+h2{font-family:"Space Grotesk";font-weight:600;font-size:21px;margin:0 0 10px;letter-spacing:-.01em}
+p{margin:0 0 12px;max-width:65ch;color:var(--tx)}
+.lede{color:var(--mu);font-size:17px}
+.card{background:var(--card);border:1px solid var(--cardb);border-radius:16px;padding:20px;margin:14px 0;
+ backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 10px 34px rgba(0,0,0,.35);transition:border-color .2s,transform .2s}
+.mu{color:var(--mu);font-size:14px}
+button{font:inherit;cursor:pointer;border-radius:11px;border:1px solid var(--bd);background:rgba(255,255,255,.04);color:var(--tx);padding:12px 14px;text-align:left;transition:border-color .15s,transform .15s,background .15s}
+button:focus-visible,input:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+button.pri{background:linear-gradient(135deg,var(--ac),var(--ac2));border-color:transparent;color:#061018;font-weight:700;text-align:center;padding:14px 22px;box-shadow:0 6px 24px rgba(34,211,238,.28)}
+button.pri:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 30px rgba(34,211,238,.4)}
+button.ghost{background:transparent}
+button:hover:not(:disabled){border-color:var(--ac)}
+button:disabled{opacity:.5;cursor:default}
+.acts{display:grid;gap:10px;margin-top:14px}
+.acts button b{display:block;font-family:"Space Grotesk";font-weight:600}
+.acts .pick{border-width:2px;border-color:var(--ac);background:rgba(34,211,238,.08)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--bd);border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px;background:rgba(255,255,255,.03)}
+.chip.pick{border-color:var(--ac);color:#061018;background:linear-gradient(135deg,var(--ac),var(--ac2))}
+pre{background:var(--code);color:var(--codetx);border-radius:12px;padding:13px;overflow-x:auto;font:13px/1.55 "JetBrains Mono",ui-monospace,Consolas,monospace;margin:10px 0;border:1px solid rgba(143,245,200,.12)}
+.hud{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-weight:700;font-family:"Space Grotesk"}
+.bar{height:10px;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden;margin:8px 0 4px}
+.bar i{display:block;height:100%;width:100%;background:var(--ok);transition:width .1s linear,background .3s}
+.fb{border-left:5px solid var(--ok);padding:12px 14px;margin-top:14px;background:rgba(255,255,255,.04);border-radius:10px}
+.fb.no{border-color:var(--bad)}.fb.mid{border-color:var(--wn)}
+.tag{display:inline-block;background:rgba(255,255,255,.05);border:1px solid var(--bd);border-radius:20px;padding:2px 11px;font-size:13px;color:var(--mu);font-family:"JetBrains Mono"}
+.hidden{display:none}
+.big{font-family:"Space Grotesk";font-size:58px;font-weight:700;line-height:1;letter-spacing:-.03em;
+ background:linear-gradient(100deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center}
+.grid div{background:rgba(255,255,255,.04);border-radius:12px;padding:10px;border:1px solid var(--bd)}.grid b{display:block;font-size:22px;font-family:"Space Grotesk"}
+table{width:100%;border-collapse:collapse;font-size:15px}
+td,th{padding:9px 7px;border-bottom:1px solid var(--bd);text-align:left}
+th{color:var(--mu);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+tr.me{background:rgba(34,211,238,.08);font-weight:700}
+.wrap{overflow-x:auto}
+input{font:inherit;padding:12px;border-radius:11px;border:1px solid var(--bd);background:rgba(255,255,255,.04);color:var(--tx);width:100%;max-width:260px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+ul.rev{list-style:none;padding:0;margin:0}ul.rev li{padding:9px 0;border-bottom:1px solid var(--bd)}
+.foot{color:var(--mu);font-size:13px;margin-top:18px}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<main>
+
+<section id="intro">
+  <h1 class="cursor">SOC Shift</h1>
+  <p class="lede">You're the security analyst on duty. Alerts arrive one at a time. Some are real attacks, some are harmless. Decide what to do before the clock runs out.</p>
+  <div class="card">
+    <h2>How it works</h2>
+    <p><b>1.</b> Read the alert — a plain-English story plus the raw log.<br>
+    <b>2.</b> Pick one action: <b>Safe</b>, <b>Suspicious</b> or <b>Attack</b>.<br>
+    <b>3.</b> Answer before the timer runs out — faster correct answers score more.<br>
+    <b>4.</b> Stuck? Use a hint. Win streaks add bonus points.</p>
+    <p class="mu">No experience needed — every answer explains what really happened, so you learn as you play. 8 alerts per shift, a few minutes.</p>
+  </div>
+  <div class="card">
+    <h2>Choose your difficulty</h2>
+    <div class="chips" id="diffChips">
+      <button class="chip" data-d="easy">🟢 Easy — 35s</button>
+      <button class="chip pick" data-d="normal">🟡 Normal — 25s</button>
+      <button class="chip" data-d="hard">🔴 Hard — 15s</button>
+    </div>
+    <p class="mu" style="margin-top:10px">Shorter timers also raise the cost of hints.</p>
+  </div>
+  <div class="row"><button class="pri" id="start">Start my shift</button><button id="dailyBtn">🗓️ Daily Challenge</button><button id="lbBtn" class="ghost">View leaderboard</button></div>
+  <p class="foot">All data is simulated. IP addresses use reserved example ranges. Nothing here touches a real network.</p>
+</section>
+
+<section id="play" class="hidden">
+  <div class="row" style="margin-bottom:8px"><button id="exitBtn" class="ghost">← Exit to main menu</button></div>
+  <div class="hud"><span id="prog"></span><span id="score"></span><span id="streak"></span></div>
+  <div class="bar"><i id="tb"></i></div>
+  <div class="mu" id="tl"></div>
+  <div class="card">
+    <span class="tag" id="src"></span>
+    <h2 id="ttl" style="margin-top:10px"></h2>
+    <p id="story"></p>
+    <pre id="log"></pre>
+    <button id="hintBtn"></button>
+    <p id="hint" class="mu hidden" style="margin-top:10px"></p>
+    <div class="acts" id="acts"></div>
+    <div id="fb" class="fb hidden"></div>
+    <div style="margin-top:14px"><button class="pri hidden" id="next">Next alert</button></div>
+  </div>
+</section>
+
+<section id="result" class="hidden">
+  <h1 id="tier"></h1>
+  <div class="card">
+    <div class="big" id="fs"></div><div class="mu">final score</div>
+    <div class="grid" style="margin-top:14px">
+      <div><b id="acc"></b><span class="mu">accuracy</span></div>
+      <div><b id="avg"></b><span class="mu">avg. decision</span></div>
+      <div><b id="tot"></b><span class="mu">total time</span></div>
+    </div>
+    <p id="tierMsg" style="margin-top:14px"></p>
+  </div>
+  <div class="card">
+    <h2>Save your result</h2>
+    <div class="row"><input id="nm" maxlength="16" placeholder="Your name" aria-label="Your name"><button class="pri" id="save">Save to leaderboard</button></div>
+    <p class="mu" id="saved" style="margin-top:8px"></p>
+  </div>
+  <div class="card"><h2>What you learned</h2><ul class="rev" id="rev"></ul></div>
+  <div class="row"><button class="pri" id="again">Play again</button><button id="menuBtn">🏠 Main menu</button><button id="lbBtn2">View leaderboard</button><button id="shareBtn" class="ghost">🔗 Share my result</button></div>
+</section>
+
+<section id="board" class="hidden">
+  <h1>Leaderboard</h1>
+  <p class="mu" id="lbSub"></p>
+  <div class="chips" id="lbTabs" style="margin-bottom:8px"></div>
+  <div class="chips" id="lbDiffTabs" style="margin-bottom:12px"></div>
+  <div class="card wrap"><table><thead><tr><th>#</th><th>Name</th><th>Score</th><th>Accuracy</th><th>Time</th></tr></thead><tbody id="lbBody"></tbody></table></div>
+  <button class="pri" id="back">Back</button>
+</section>
+
+</main>
+<script src="config.js"></script>
+<script>
+const DB=((window.SOC_CONFIG&&window.SOC_CONFIG.databaseURL)||"").replace(/\/$/,"");
+const N=8;
+const DIFF={easy:{t:35,hint:10,label:"Easy"},normal:{t:25,hint:20,label:"Normal"},hard:{t:15,hint:30,label:"Hard"}};
+let diffKey="normal";
+const ACT=[["✅","Safe","Normal activity. Dismiss it."],["🔍","Suspicious","Not sure. Investigate further."],["🚨","Attack","Real threat. Block and escalate."]];
+const A=[
+{t:"Hundreds of failed logins, then a success",s:"Login attempts on the company server",a:2,st:"One outside computer tried to log in to the admin account 240 times in 2 minutes. Then one attempt worked.",log:"09:14:02 FAILED ssh admin from 203.0.113.50 (x240)\n09:16:11 SUCCESS ssh admin from 203.0.113.50",h:"Real people rarely fail 240 times in 2 minutes, and the last attempt got in.",tech:"Brute force (MITRE T1110)",w:"An automated tool guessed the password until it worked. The attacker is now inside, so block the address and escalate."},
+{t:"Three failed logins at the start of the day",s:"Login attempts on the email system",a:0,st:"An employee mistyped their password 3 times, then logged in from the usual office address.",log:"09:02:10 FAILED login sam.k from 198.51.100.10 (x3)\n09:02:41 SUCCESS login sam.k from 198.51.100.10",h:"Check who it is, where they are, and how many attempts there were.",tech:"Normal behaviour (false positive)",w:"A few typos from a known place is normal. Reacting to every alert like this wastes time and causes alert fatigue."},
+{t:"Same person logs in from two countries",s:"Cloud account sign-ins",a:2,st:"An account signed in from Manchester, then 20 minutes later from Singapore.",log:"09:00 SUCCESS login j.patel from Manchester, UK\n09:20 SUCCESS login j.patel from Singapore",h:"Can anyone travel 10,000 km in 20 minutes?",tech:"Impossible travel, stolen credentials (T1078)",w:"It is physically impossible, so someone else is using the stolen login. Lock the account and escalate."},
+{t:"Huge upload at 2 a.m.",s:"Network traffic monitor",a:0,st:"The backup server sent 50 GB to the company's cloud storage. The same happens every night at 2 a.m.",log:"02:00 UPLOAD 50GB src=backup-srv dst=corp-cloud.example.com\nschedule: nightly-backup (approved)",h:"Look at who sent it, where it went, and whether it is scheduled.",tech:"Scheduled backup (false positive)",w:"It is an approved, known job going to a trusted place. Knowing what is normal is a key analyst skill."},
+{t:"Laptop uploads 4 GB to an unknown website",s:"Data loss prevention",a:2,st:"A finance laptop sent 4 GB of files to a file-sharing site the company has never used, at 11:40 p.m.",log:"23:40 UPLOAD 4.1GB src=fin-laptop-07 dst=quickfileshare.example\nfiles: payroll_2026.xlsx, clients.csv",h:"Sensitive files, odd hour, unknown destination.",tech:"Data theft (T1041)",w:"Payroll and client data left the company. Isolate the laptop and escalate at once."},
+{t:"One address probes 1,000 ports",s:"Firewall",a:1,st:"A computer on the internet quickly checked many doors on the company firewall. All were blocked.",log:"11:05:00-11:05:30 DENY 203.0.113.99 -> fw ports 1-1000\nresult: 0 connections allowed",h:"Nothing got through. Is it worth panicking?",tech:"Port scan (T1046)",w:"Scanning is constant background noise, but it is worth noting the address. Investigate, don't sound the alarm."},
+{t:"A Word file launches PowerShell",s:"Endpoint protection",a:2,st:"After an employee opened an invoice, Word started a hidden command tool that downloaded a program.",log:"10:31 WINWORD.EXE opened invoice_8841.docm\n10:31 WINWORD.EXE spawned powershell.exe -enc JAB...\n10:31 powershell downloaded http://198.51.100.77/a.exe",h:"Documents should not run hidden programs.",tech:"Malicious macro (T1059)",w:"A booby-trapped document is installing malware. Isolate the computer and escalate."},
+{t:"IT runs its weekly security scan",s:"Vulnerability scanner",a:0,st:"An internal computer checked many servers for weak spots. IT announced this scan and it runs every Tuesday.",log:"Tue 03:00 SCAN src=10.0.5.20 (it-scanner) targets=all-servers\nticket: CHG-2291 approved",h:"Who owns 10.0.5.20, and was it approved?",tech:"Authorised scan (false positive)",w:"An approved change ticket makes this expected. Similar activity from an unknown source would be different."},
+{t:"New admin account at 3 a.m.",s:"Account changes",a:2,st:"A normal staff account created a brand-new administrator account in the middle of the night.",log:"03:12 CREATE user svc_backup2 role=ADMIN by=m.jones (staff)\nno change ticket",h:"Should regular staff create admins?",tech:"Persistence via new account (T1136)",w:"Attackers create hidden admin accounts so they can return later. Disable it and escalate."},
+{t:"One password tried on 300 accounts",s:"Login attempts",a:2,st:"One address tried the same common password once on 300 different accounts. Two worked.",log:"14:20-14:50 FAILED x298, SUCCESS x2 password=Summer2026!\nfrom 203.0.113.61 across 300 usernames",h:"Slow and spread out to avoid lockouts.",tech:"Password spraying (T1110.003)",w:"Trying one password on many accounts avoids lockout rules. Two accounts are already compromised, so block and escalate."},
+{t:"Employee enters password on a fake login page",s:"Web filter",a:2,st:"A user clicked an email link to 'micros0ft-login.com' (with a zero) and typed their credentials.",log:"08:47 CLICK link in email from 'IT Helpdesk'\n08:47 POST micros0ft-login.com/signin user=a.lee",h:"Read the website address letter by letter.",tech:"Phishing (T1566)",w:"The lookalike site captured the login. Reset the password, block the domain and escalate."},
+{t:"Phone signs in with a new device",s:"Account sign-ins",a:0,st:"An employee signed in from a new phone after confirming the login with multi-factor authentication (MFA), from their usual city.",log:"18:10 SUCCESS login r.chen device=new-phone city=Manchester MFA=approved",h:"Was the login verified, and does the place match?",tech:"Normal behaviour (false positive)",w:"MFA was approved from the normal location. New device alone is not a threat."},
+{t:"Ransomware note appears on every shared drive",s:"File server",a:2,st:"Thousands of files were renamed with a strange extension in minutes, and a text file demanding payment appeared in every folder.",log:"14:02 RENAME x3,480 files ext=.lockedx1 src=svc-fileserver\n14:02 CREATE README_RESTORE.txt in 212 folders",h:"Mass file renaming across the whole file server, all at once.",tech:"Ransomware (T1486)",w:"This is an active ransomware attack encrypting files. Disconnect the server from the network immediately and escalate."},
+{t:"Unknown USB stick plugged into a staff laptop",s:"Endpoint protection",a:2,st:"An employee found a USB stick in the car park, plugged it in, and opened the file on it. A hidden program then ran in the background.",log:"13:10 USB connected id=unknown_8841\n13:10 USER opened resume.pdf.exe\n13:11 unknown process beaconing to 198.51.100.44 every 60s",h:"Found hardware, run on a work laptop, followed by a process calling home.",tech:"Removable media attack (T1091)",w:"This is a classic dropped-USB attack. Isolate the laptop, remove the USB from use and escalate."},
+{t:"Contractor downloads the whole customer database the night before their contract ends",s:"Database access logs",a:1,st:"A contractor with normal database access exported the entire customer table at 11 p.m., the day before their last day.",log:"23:05 EXPORT table=customers rows=184,221 by=contractor_k.ito\nlast_day: tomorrow",h:"The access itself is allowed. What makes the timing and size worth a closer look?",tech:"Possible insider risk — needs investigation",w:"Nothing here is technically broken, but a full export right before someone leaves is a strong reason to ask why. This is a judgement call, and investigating first is safer than ignoring it or escalating immediately."},
+{t:"A laptop sends thousands of odd-looking DNS lookups",s:"DNS monitor",a:2,st:"A marketing laptop looked up over 4,000 long, random subdomains of a domain nobody recognises, several times a minute, all day.",log:"DNS query: 8f3ac1d9e2b7.datasync-relay.example (x4,120, 24h)\navg query length: 61 chars",h:"Real websites don't need thousands of random-looking subdomain lookups.",tech:"DNS tunnelling (T1071.004)",w:"Attackers hide stolen data inside DNS lookups to sneak past firewalls. Block the domain, isolate the laptop and escalate."},
+{t:"A security researcher reports an open customer data bucket",s:"External report",a:2,st:"An outside researcher emailed to say your company's cloud storage bucket is public and anyone can download customer files from it.",log:"bucket: corp-customer-files\naccess: public-read (should be private)\nfiles exposed: 12,400",h:"Customer data is already exposed to anyone on the internet right now.",tech:"Cloud misconfiguration / data exposure",w:"This is a live data exposure, not just a suspicious log. Lock the bucket down immediately, then investigate who accessed it and escalate."},
+{t:"Automated build uploads a new app version at 1 a.m.",s:"Deployment pipeline",a:0,st:"The company's release pipeline built and uploaded a new app version overnight, exactly as scheduled every release night.",log:"01:00 BUILD+DEPLOY pipeline=release-pipeline v=4.12.0\napproved_by=change-ticket CHG-3105",h:"Is this expected, scheduled and tied to an approved change?",tech:"Approved deployment (false positive)",w:"A scheduled, ticketed release is expected activity. Recognising normal automation is as important as spotting attacks."},
+{t:"New employee account created with manager approval",s:"Account changes",a:0,st:"HR's onboarding system created a standard (non-admin) account for a new starter, matching their start date and approved ticket.",log:"09:00 CREATE user l.osei role=STANDARD by=hr-onboarding-system\nticket: ONB-884 approved, start_date=today",h:"Compare this to the 3 a.m. admin account alert earlier. What's different here?",tech:"Standard onboarding (false positive)",w:"A standard account, created at a normal time, tied to an approved onboarding ticket, is routine. Context is everything."}
+];
+const TIERS=[[0,"Curious Newcomer","You are just getting started. Play again and read the explanations, they are the fast route to improving."],[300,"Junior Analyst","Solid basics. You spot the obvious attacks; now work on the tricky harmless ones."],[600,"SOC Analyst","Well done. You balance speed and accuracy the way real analysts do."],[900,"Senior Analyst","Excellent judgement and speed. Teams would want you on shift."],[1100,"Threat Hunter","Outstanding. Almost nothing gets past you."]];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function mulberry32(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function seededShuffle(arr,seed){const rnd=mulberry32(seed),out=[...arr];for(let i=out.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out}
+function dateSeed(){const d=new Date(),s=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return h}
+
+let G,tm,left,answered,hinted,res,curT,curHint,mode;
+$("diffChips").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;diffKey=b.dataset.d;
+ $("diffChips").querySelectorAll(".chip").forEach(c=>c.classList.toggle("pick",c===b))};
+function show(id){["intro","play","result","board"].forEach(s=>$(s).classList.toggle("hidden",s!==id));window.scrollTo(0,0)}
+function start(daily){mode=daily?"daily":"practice";
+ const d=daily?DIFF.normal:DIFF[diffKey];curT=d.t;curHint=d.hint;
+ const pool=daily?seededShuffle(A,dateSeed()):[...A].sort(()=>Math.random()-.5);
+ G={q:pool.slice(0,N),i:0,score:0,streak:0,res:[],t0:Date.now()};show("play");load()}
+function load(){const a=G.q[G.i];answered=false;hinted=false;left=curT;
+ $("prog").textContent=`${mode==="daily"?"🗓️ Daily · ":""}Alert ${G.i+1} of ${N}`;$("score").textContent=`Score ${G.score}`;$("streak").textContent=G.streak>1?`🔥 Streak ${G.streak}`:"";
+ $("src").textContent=a.s;$("ttl").textContent=a.t;$("story").textContent=a.st;$("log").textContent=a.log;
+ $("hintBtn").textContent=`💡 Need a hint? (-${curHint} points)`;
+ $("hint").classList.add("hidden");$("hintBtn").disabled=false;$("fb").classList.add("hidden");$("next").classList.add("hidden");
+ $("acts").innerHTML=ACT.map((x,k)=>`<button data-k="${k}"><b>${x[0]} ${x[1]}</b><span class="mu">${x[2]}</span></button>`).join("");
+ $("acts").querySelectorAll("button").forEach(b=>b.onclick=()=>answer(+b.dataset.k));
+ clearInterval(tm);tick();tm=setInterval(()=>{left-=.1;tick();if(left<=0)answer(-1)},100)}
+function tick(){const p=Math.max(left,0)/curT*100;$("tb").style.width=p+"%";$("tb").style.background=p>50?"var(--ok)":p>20?"var(--wn)":"var(--bad)";$("tl").textContent=`${Math.max(left,0).toFixed(1)}s left`}
+function answer(k){if(answered)return;answered=true;clearInterval(tm);const a=G.q[G.i],used=curT-Math.max(left,0);
+ let pts=0,cls="no",head;
+ if(k===-1){pts=-25;G.streak=0;head="⏰ Time's up. -25"}
+ else{const d=Math.abs(k-a.a);
+  if(d===0){G.streak++;pts=100+Math.round(50*Math.max(left,0)/curT)+Math.min((G.streak-1)*10,40);cls="";head=`✔ Correct! +${pts}`}
+  else if(d===1){G.streak=0;pts=30;cls="mid";head=`◐ Close. +30 (best answer: ${ACT[a.a][1]})`}
+  else{G.streak=0;pts=-50;head=`✖ Not quite. -50 (best answer: ${ACT[a.a][1]})`}}
+ if(hinted)pts-=curHint;G.score+=pts;
+ G.res.push({t:a.t,tech:a.tech,w:a.w,ok:k===a.a,used});
+ $("acts").querySelectorAll("button").forEach((b,j)=>{b.disabled=true;if(j===k)b.classList.add("pick")});
+ $("score").textContent=`Score ${G.score}`;
+ $("fb").className="fb "+cls;$("fb").innerHTML=`<b>${esc(head)}</b><p style="margin:6px 0 4px">${esc(a.w)}</p><span class="tag">${esc(a.tech)}</span>`;
+ $("hintBtn").disabled=true;
+ $("next").textContent=G.i===N-1?"See my results":"Next alert";$("next").classList.remove("hidden");$("next").focus()}
+function finish(){const r=G.res,ok=r.filter(x=>x.ok).length,tot=(Date.now()-G.t0)/1000,avg=r.reduce((s,x)=>s+x.used,0)/r.length;
+ let ti=TIERS[0];TIERS.forEach(t=>{if(G.score>=t[0])ti=t});
+ res={score:G.score,acc:Math.round(ok/N*100),time:Math.round(tot),mode,diff:mode==="daily"?"normal":diffKey};
+ $("tier").textContent=(mode==="daily"?"🗓️ ":"")+ti[1];$("tierMsg").textContent=ti[2];$("fs").textContent=G.score;
+ $("acc").textContent=`${ok}/${N}`;$("avg").textContent=avg.toFixed(1)+"s";$("tot").textContent=fmt(tot);
+ $("rev").innerHTML=r.map(x=>`<li>${x.ok?"✅":"❌"} <b>${esc(x.tech)}</b><br><span class="mu">${esc(x.w)}</span></li>`).join("");
+ $("saved").textContent="";$("save").disabled=false;show("result")}
+const fmt=s=>`${Math.floor(s/60)}:${String(Math.round(s%60)).padStart(2,"0")}`;
+function lb(){try{return JSON.parse(localStorage.getItem("socshift_lb")||"[]")}catch(e){return[]}}
+function saveLb(list){try{localStorage.setItem("socshift_lb",JSON.stringify(list));return true}catch(e){return false}}
+let lastId=null;
+async function saveScore(){const n=($("nm").value.trim()||"Anonymous").slice(0,16);lastId=Date.now();
+ const rec={id:lastId,n,s:res.score,a:res.acc,t:res.time,m:res.mode,d:res.diff};
+ const l=lb();l.push(rec);l.sort((x,y)=>y.s-x.s||x.t-y.t);saveLb(l.slice(0,20));$("save").disabled=true;
+ if(!DB){$("saved").textContent=`Saved on this device. You are #${l.findIndex(x=>x.id===lastId)+1} here.`;return}
+ $("saved").textContent="Saving to the global leaderboard...";
+ try{const r=await fetch(DB+"/scores.json",{method:"POST",body:JSON.stringify(rec)});if(!r.ok)throw 0;
+  const all=await getAll(),own=all.filter(x=>x.m===res.mode),rank=own.findIndex(x=>x.id===lastId)+1;
+  $("saved").textContent=rank?`Saved! You are #${rank} on the global ${res.mode} leaderboard.`:"Saved! Outside the top 200 shown."}
+ catch(e){$("saved").textContent="Saved on this device only. The global leaderboard could not be reached."}}
+async function getAll(){const r=await fetch(DB+'/scores.json?orderBy="s"&limitToLast=200');if(!r.ok)throw 0;const o=await r.json()||{};return Object.values(o).sort((x,y)=>y.s-x.s||x.t-y.t)}
+let boardCache=null,boardIsGlobal=false,lbFilter="all",lbDiffFilter="all";
+const DIFFTAG={easy:"🟢 Easy",normal:"🟡 Normal",hard:"🔴 Hard"};
+async function board(){show("board");$("lbTabs").innerHTML=`<button class="chip pick" data-f="all">All modes</button><button class="chip" data-f="practice">Practice</button><button class="chip" data-f="daily">🗓️ Daily</button>`;
+ $("lbTabs").querySelectorAll(".chip").forEach(c=>c.onclick=()=>{lbFilter=c.dataset.f;$("lbTabs").querySelectorAll(".chip").forEach(x=>x.classList.toggle("pick",x===c));renderBoard()});
+ $("lbDiffTabs").innerHTML=`<button class="chip pick" data-d="all">All difficulties</button><button class="chip" data-d="easy">🟢 Easy</button><button class="chip" data-d="normal">🟡 Normal</button><button class="chip" data-d="hard">🔴 Hard</button>`;
+ $("lbDiffTabs").querySelectorAll(".chip").forEach(c=>c.onclick=()=>{lbDiffFilter=c.dataset.d;$("lbDiffTabs").querySelectorAll(".chip").forEach(x=>x.classList.toggle("pick",x===c));renderBoard()});
+ $("lbSub").textContent="Loading...";$("lbBody").innerHTML='<tr><td colspan="5" class="mu">Loading...</td></tr>';
+ boardIsGlobal=false;if(DB){try{boardCache=await getAll();boardIsGlobal=true}catch(e){}}
+ if(!boardIsGlobal)boardCache=lb();
+ renderBoard()}
+function renderBoard(){const g=boardIsGlobal;
+ $("lbSub").textContent=g?"Global leaderboard from all players.":(DB?"Global leaderboard unavailable — showing this device only.":"Shifts played on this device.");
+ let l=boardCache.filter(x=>(lbFilter==="all"?true:(x.m||"practice")===lbFilter)&&(lbDiffFilter==="all"?true:(x.d||"normal")===lbDiffFilter));
+ const max=g?20:10,row=(x,i)=>`<tr class="${x.id===lastId?"me":""}"><td>${i+1}</td><td>${esc(x.n)}${x.m==="daily"?" 🗓️":""} <span class="tag" style="padding:0 8px">${DIFFTAG[x.d||"normal"]}</span></td><td>${x.s}</td><td>${x.a}%</td><td>${fmt(x.t)}</td></tr>`;
+ let h=l.slice(0,max).map(row).join("");
+ const me=l.findIndex(x=>x.id===lastId);if(g&&me>=max)h+=`<tr><td colspan="5" class="mu">···</td></tr>`+row(l[me],me);
+ $("lbBody").innerHTML=h||'<tr><td colspan="5" class="mu">No shifts saved yet. Play one and be the first!</td></tr>'}
+async function shareResult(){const ti=(()=>{let t=TIERS[0];TIERS.forEach(x=>{if(res.score>=x[0])t=x});return t[1]})();
+ const text=`I scored ${res.score} on SOC Shift (${ti}) — ${res.acc}% accuracy. Can you beat me?\n${location.href}`;
+ try{await navigator.clipboard.writeText(text);const old=$("shareBtn").textContent;$("shareBtn").textContent="Copied! Paste it anywhere.";setTimeout(()=>$("shareBtn").textContent=old,2200)}
+ catch(e){prompt("Copy your result:",text)}}
+$("start").onclick=()=>start(false);$("dailyBtn").onclick=()=>start(true);$("again").onclick=()=>start(mode==="daily");
+$("next").onclick=()=>{if(G.i===N-1)finish();else{G.i++;load()}};
+$("hintBtn").onclick=()=>{if(answered||hinted)return;hinted=true;$("hint").textContent="💡 "+G.q[G.i].h;$("hint").classList.remove("hidden");$("hintBtn").disabled=true};
+$("save").onclick=saveScore;$("lbBtn").onclick=board;$("lbBtn2").onclick=board;$("shareBtn").onclick=shareResult;$("menuBtn").onclick=()=>show("intro");
+$("exitBtn").onclick=()=>{if(confirm("Leave this shift? Your progress won't be saved.")){clearInterval(tm);show("intro")}};
+$("back").onclick=()=>show(G&&G.res.length===N&&res?"result":"intro");
+</script>
+</body>
+</html>
