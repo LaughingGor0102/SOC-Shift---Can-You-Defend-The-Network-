@@ -4,23 +4,31 @@
 
 SOC Shift is a lightweight, browser-based cybersecurity learning quiz game where you play as a Security Operations Center (SOC) analyst. Review simulated security alerts, inspect raw logs, and decide whether each event is safe, suspicious, or an attack—all before the timer runs out.
 
+No installation, no account, no experience needed. Works on phone and computer.
+
 No cybersecurity experience is required: each decision comes with an explanation to help you learn as you play.
+
+## Why I built it
+
+**Entry-level security jobs ask for hands-on experience, but most people never get to see real alerts or practise triage decisions. SOC Shift is a safe place to practise, and it lets non-specialists see what defending against attacks feels like.**
+
+**[▶ Play the live demo]()**
 
 ## Features
 
-- **Three difficulty levels:** Easy, Normal, and Hard, with different decision timers.
-- **Timed alert decisions:** Make a call before the countdown reaches zero.
-- **Scoring and streak bonuses:** Faster correct answers and consecutive correct decisions earn more points.
+- **3 Difficulty Levels:** Easy, Normal, and Hard, with different decision timers.
+- **Timed Alert Decisions:** Make a call before the countdown reaches zero.
+- **Scoring & Streak bonuses:** Faster correct answers and consecutive correct decisions earn more points.
 - **Hints:** Reveal a clue at a point cost.
 - **Daily Challenge:** Play a repeatable daily set of alerts.
-- **Results and learning review:** See your score, accuracy, decision times, analyst tier, and explanations for the alerts.
+- **Results & learning Review:** See your score, accuracy, decision times, analyst tier, and explanations for the alerts.
 - **Leaderboard:** Save scores and filter results by game mode and difficulty.
-- **Responsive interface:** Designed to work on desktop and mobile-sized screens.
-- **Simulated scenarios:** The game uses fictional activity and example IP address ranges; it does not connect to or defend a real network.
+- **Responsive Interface:** Designed to work on desktop and mobile-sized screens.
+- **Simulated Scenarios:** The game uses fictional activity and example IP address ranges; it does not connect to or defend a real network.
 
 ## How to Play
 
-1. Open the game in your browser.
+1. Open the link in your browser.
 2. Choose a difficulty:
    - **Easy:** 35 seconds per alert
    - **Normal:** 25 seconds per alert
@@ -28,13 +36,13 @@ No cybersecurity experience is required: each decision comes with an explanation
 3. Select **Start my shift** or **Daily Challenge**.
 4. Review the alert story and its raw log.
 5. Choose one of the three actions:
-   - **Safe** — the activity appears normal; dismiss the alert.
-   - **Suspicious** — investigate further.
-   - **Attack** — treat it as a real threat and block/escalate as appropriate to the scenario.
-6. Read the feedback and explanation, then continue to the next alert.
-7. After eight alerts, review your score and what you learned. Optionally save your result to the leaderboard.
+   - ✅ **Safe**: normal activity, dismiss it
+   - 🔍 **Suspicious**: not sure, investigate further
+   - 🚨 **Attack**: real threat, block and escalate
+6. Read the feedback and explanation, then continue to the continue.
+7. After 8 alerts, review your score and what you learned. Optionally save your result to the leaderboard.
 
-You can use a hint during an alert, but doing so reduces the points earned for that answer. Leaving a shift early discards its progress.
+You can use a **HINT** during an alert, but doing so reduces the points earned for that answer. Leaving a shift early discards its progress.
 
 ## Scoring
 
@@ -53,7 +61,7 @@ Hint costs are **10 points on Easy**, **20 points on Normal**, and **30 points o
 
 The final score determines your analyst tier:
 
-| Minimum score | Tier |
+| Minimum score | Rank |
 | ---: | --- |
 | 0 | Curious Newcomer |
 | 300 | Junior Analyst |
@@ -63,7 +71,7 @@ The final score determines your analyst tier:
 
 ## Alert Scenarios
 
-The game draws eight alerts from a larger set of simulated scenarios, including:
+Each alert is based on a real attack technique or a common false alarm, and is mapped to the [MITRE ATT&CK](https://attack.mitre.org/) framework where relevant:
 
 - Brute-force login attempts and password spraying
 - Impossible travel and suspicious sign-ins
