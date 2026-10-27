@@ -8,7 +8,7 @@ No installation, no account, no experience needed. Works on phone and computer.
 
 No cybersecurity experience is required: each decision comes with an explanation to help you learn as you play.
 
-**[▶ Play the live demo]()**
+**[▶ Play the live demo](https://laughinggor0102.github.io/SOC-Shift---Can-You-Defend-The-Network-/)**
 
 ## Why I built it
 
