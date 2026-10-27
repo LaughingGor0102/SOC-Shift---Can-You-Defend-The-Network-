@@ -8,11 +8,11 @@ No installation, no account, no experience needed. Works on phone and computer.
 
 No cybersecurity experience is required: each decision comes with an explanation to help you learn as you play.
 
+**[▶ Play the live demo]()**
+
 ## Why I built it
 
 **Entry-level security jobs ask for hands-on experience, but most people never get to see real alerts or practise triage decisions. SOC Shift is a safe place to practise, and it lets non-specialists see what defending against attacks feels like.**
-
-**[▶ Play the live demo]()**
 
 ## Features
 
